@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.math.BigInteger;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.function.Supplier;
@@ -11,13 +12,13 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public class RSAFrame extends JFrame implements ActionListener {
-    private Container container;
+    private JPanel container;
     private JLabel inputTextLabel;
     private JTextArea inputText;
     private JLabel publicKeyLabel;
-    private JLabel publicKey;
+    private JTextArea publicKey;
     private JLabel privateKeyLabel;
-    private JLabel privateKey;
+    private JTextArea privateKey;
     private JLabel encryptedTextLabel;
     private JTextArea encryptedText;
     private JLabel decryptedTextLabel;
@@ -37,8 +38,9 @@ public class RSAFrame extends JFrame implements ActionListener {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setResizable(true);
 
-        container = getContentPane();
-        container.setLayout(null);
+        container = new JPanel(new GridLayout(6, 1));
+        JComponent.setDefaultLocale(java.util.Locale.SIMPLIFIED_CHINESE);
+        JComponent.setDefaultLocale(Locale.JAPANESE);
 
         inputTextLabel = new JLabel("Input text to encrypt");
         inputTextLabel.setFont(new Font("Arial", Font.PLAIN, 15));
@@ -47,10 +49,11 @@ public class RSAFrame extends JFrame implements ActionListener {
         container.add(inputTextLabel);
 
         inputText = new JTextArea();
-        inputText.setFont(new Font("Arial", Font.PLAIN, 15));
+        inputText.setFont(new Font("MS Song", Font.PLAIN, 15));
         inputText.setSize(500, 200);
         inputText.setLocation(250, 50);
-        container.add(inputText);
+        inputText.setLocale(new Locale("zh", "CN"));
+        container.add(new JScrollPane(inputText));
 
         publicKeyLabel = new JLabel("Public key");
         publicKeyLabel.setFont(new Font("Arial", Font.PLAIN, 15));
@@ -58,11 +61,11 @@ public class RSAFrame extends JFrame implements ActionListener {
         publicKeyLabel.setLocation(50, 270);
         container.add(publicKeyLabel);
 
-        publicKey = new JLabel();
+        publicKey = new JTextArea();
         publicKey.setFont(new Font("Arial", Font.PLAIN, 15));
         publicKey.setSize(200, 20);
         publicKey.setLocation(250, 270);
-        container.add(publicKey);
+        container.add(new JScrollPane(publicKey));
 
         privateKeyLabel = new JLabel("Private key");
         privateKeyLabel.setFont(new Font("Arial", Font.PLAIN, 15));
@@ -70,11 +73,11 @@ public class RSAFrame extends JFrame implements ActionListener {
         privateKeyLabel.setLocation(50, 300);
         container.add(privateKeyLabel);
 
-        privateKey = new JLabel();
+        privateKey = new JTextArea();
         privateKey.setFont(new Font("Arial", Font.PLAIN, 15));
         privateKey.setSize(200, 20);
         privateKey.setLocation(250, 300);
-        container.add(privateKey);
+        container.add(new JScrollPane(privateKey));
 
         encryptedTextLabel = new JLabel("Encrypted text");
         encryptedTextLabel.setFont(new Font("Arial", Font.PLAIN, 15));
@@ -86,7 +89,7 @@ public class RSAFrame extends JFrame implements ActionListener {
         encryptedText.setFont(new Font("Arial", Font.PLAIN, 15));
         encryptedText.setSize(500, 200);
         encryptedText.setLocation(250, 330);
-        container.add(encryptedText);
+        container.add(new JScrollPane(encryptedText));
 
         decryptedTextLabel = new JLabel("Decrypted text");
         decryptedTextLabel.setFont(new Font("Arial", Font.PLAIN, 15));
@@ -95,16 +98,18 @@ public class RSAFrame extends JFrame implements ActionListener {
         container.add(decryptedTextLabel);
 
         decryptedText = new JTextArea();
-        decryptedText.setFont(new Font("Arial", Font.PLAIN, 15));
+        decryptedText.setFont(new Font("MS Song", Font.PLAIN, 15));
         decryptedText.setSize(500, 200);
         decryptedText.setLocation(250, 550);
-        container.add(decryptedText);
+        container.add(new JScrollPane(decryptedText));
 
         submit = new JButton("Submit");
         submit.setSize(100, 50);
         submit.setLocation(780, 50);
         submit.addActionListener(this);
         container.add(submit);
+
+        add(container);
 
         setVisible(true);
     }
@@ -145,12 +150,15 @@ public class RSAFrame extends JFrame implements ActionListener {
                 decriptedValue = encryptedMessage.modPow(this.d, this.n);
                 System.out.println(encryptedMessage);
                 System.out.println(decriptedValue);
+                this.dictionary.put(c, encryptedMessage);
             }
             encryptedTextString.append(this.dictionary.get(c));
             decryptedTextString.append((char) c);
         });
 
-        encryptedText.append(encryptedTextString.toString());
-        decryptedText.append(decryptedTextString.toString());
+        encryptedText.setText(encryptedTextString.toString());
+        decryptedText.setText(decryptedTextString.toString());
+        publicKey.setText("(" + this.e + ", " + this.n + ")");
+        privateKey.setText("(" + this.d + ", " + this.n + ")");
     }
 }
